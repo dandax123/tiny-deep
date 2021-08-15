@@ -4,10 +4,13 @@ from numpy.core.records import array
 from initalization import *
 from forward_prop import *
 from costs import *
+from backward_prop import *
 class Model:
     layers = []
     inputs = np.array([])
     outputs = np.array([])
+    parameters = {}
+    grads = {}
     def __init__(self, inputs, outputs):
         self.inputs = np.array(inputs) 
         self.outputs = np.array(outputs)
@@ -26,7 +29,7 @@ class Model:
         # randomize = np.arange(m)
         # np.random.shuffle(randomize)
         shuffled_X = self.inputs
-        shuffled_Y = self.outputs
+        shuffled_Y = self.outputs.T
         # print(shuffled_X.shape)
         num_of_batches = math.floor(m/mini_batch_size)
         for k in range(0, num_of_batches):
@@ -42,20 +45,26 @@ class Model:
             mini_batch = (mini_batch_X, mini_batch_Y)
             mini_batches.append(mini_batch)
         return mini_batches
-    def train(self, batch_size=1, epoch = 10000, learning_rate = 0.1, l2_decay= False, initalization_method="He"):
+    def train(self, batch_size=50, epoch = 100000, learning_rate = 0.7, l2_decay= False, initalization_method="He"):
         mini_batches = self.batchify(batch_size)
         layer_dims = self.get_layer_dims()
         # print(layer_dims)
-        total_cost = 0
-        parameters = initalize_parameter(layer_dims, initalization_method)
+        self.parameters = initalize_parameter(layer_dims, initalization_method)
         for i in range(epoch):
             for mini_batch in mini_batches:
                 (mini_batch_X, mini_batch_Y) = mini_batch
-                # print(mini_batch_X)
-                AL, cache = forward_propagation(mini_batch_X, self.layers, parameters)
+                AL, cache = forward_propagation(mini_batch_X, self.layers, self.parameters)
                 cost = compute_cost(AL, mini_batch_Y, batch_size)
-                total_cost += cost
-        print(total_cost)
+                grads = back_propagation(AL, mini_batch_Y,  cache, self.layers)
+                self.parameters = update_parameters(grads, self.parameters, learning_rate)
+        return self
+    def predict(self):
+        AL, cache = forward_propagation(self.inputs, self.layers, self.parameters)
+        Y  = self.outputs.T
+        predictions = 1 * [ AL > 0.5]
+        predictions = np.array(predictions).reshape(1,400)
+        print ('Accuracy: %d' % float((np.dot(Y, predictions.T) + np.dot(1 - Y, 1 - predictions.T)) / float(Y.size) * 100) + '%')
+        # print(total_cost)
                 
 
 

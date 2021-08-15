@@ -7,6 +7,9 @@ def initalize_parameter(layer_dims=[], initalization_method="He"):
         if(initalization_method == "He"):
             parameters['W' + str(i)]  =  initalize_he_weight(shape)
             parameters['b' + str(i)] = np.zeros((layer_dims[i], 1))
+        else:
+            parameters['W' + str(i)]  =  initialize_random_weight(shape)
+            parameters['b' + str(i)] = np.zeros((layer_dims[i], 1))
     return parameters
 
 def initialize_random_weight(shape):

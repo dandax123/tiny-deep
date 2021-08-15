@@ -9,7 +9,6 @@ def linear_forward(A, W, b):
 def linear_activation_forward(A_prev, W, b, activation_method):
     Z, linear_cache  = linear_forward(A_prev, W, b)
     if(activation_method == "Relu"):
-        print(Z.shape)
         A, activation_cache = relu_forward(Z)
     elif(activation_method == "Sigmoid"):
         A, activation_cache = sigmoid_forward(Z)
@@ -26,7 +25,6 @@ def forward_propagation(mini_batch_X, layers, parameters):
         A_prev = A
         A, cache = linear_activation_forward(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], layers[l]['activation'])
         caches.append(cache)
-    
-    AL, cache = linear_activation_forward(A, parameters['W' + str(L)], parameters['b' + str(L)], layers[-1]['activation'])
+    AL, cache = linear_activation_forward(A, parameters['W' + str(L)], parameters['b' + str(L)], layers[L-1]['activation'])
     caches.append(cache)   
     return AL, caches
