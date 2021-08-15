@@ -9,6 +9,7 @@ def linear_forward(A, W, b):
 def linear_activation_forward(A_prev, W, b, activation_method):
     Z, linear_cache  = linear_forward(A_prev, W, b)
     if(activation_method == "Relu"):
+        print(Z.shape)
         A, activation_cache = relu_forward(Z)
     elif(activation_method == "Sigmoid"):
         A, activation_cache = sigmoid_forward(Z)

@@ -1,7 +1,7 @@
 import numpy as np
 
 def relu_forward(z):
-    return np.maximum(z, 0)
+    return (np.maximum(z, 0),z )
 
 def relu_backward(z):
     return 1 * (z > 0)
@@ -19,6 +19,3 @@ def sigmoid_backward(z):
 def softmax_layer(z, c):
     return z
 
-
-b = sigmoid_forward(np.array([0.5, 0, 2.0]))
-print(b)
