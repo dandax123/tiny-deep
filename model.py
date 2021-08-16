@@ -17,6 +17,7 @@ class Model:
     def __init__(self, inputs, outputs):
         self.inputs = np.array(inputs, dtype=np.float128)
         self.outputs = np.array(outputs, dtype=np.float128)
+        assert self.inputs.shape[1] == self.outputs.shape[1]
         self.parameters = {}
         self.grads = {}
 
@@ -37,7 +38,7 @@ class Model:
         # randomize = np.arange(m)
         # np.random.shuffle(randomize)
         shuffled_X = self.inputs
-        shuffled_Y = self.outputs.T
+        shuffled_Y = self.outputs
         # print(shuffled_X.shape)
         num_of_batches = math.floor(m / mini_batch_size)
         for k in range(0, num_of_batches):
@@ -56,9 +57,9 @@ class Model:
 
     def train(
         self,
-        batch_size=400,
+        batch_size=64,
         epoch=100000,
-        learning_rate=15.7,
+        learning_rate=0.5,
         l2_decay=False,
         initalization_method="He",
     ):
@@ -80,21 +81,10 @@ class Model:
                     grads, self.parameters, learning_rate
                 )
                 # accuracy = get_accuracy_value(AL, mini_batch_Y)
-                # print(accuracy)
+                # print(cost)
         return self
 
     def predict(self, inputs, outputs):
         AL, cache = forward_propagation(inputs, self.layers, self.parameters)
-        Y = outputs.T
-        predictions = 1 * [AL > 0.5]
-        predictions = np.array(predictions).reshape(1, inputs.shape[1])
-        print(
-            "Accuracy: %d"
-            % float(
-                (np.dot(Y, predictions.T) + np.dot(1 - Y, 1 - predictions.T))
-                / float(Y.size)
-                * 100
-            )
-            + "%"
-        )
-        # print(total_cost)
+        accuracy = get_accuracy_value(AL, outputs)
+        print(f"Accuracy: {accuracy * 100}")
