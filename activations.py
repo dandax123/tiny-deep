@@ -6,10 +6,10 @@ def relu_forward(x):
     return b
 
 
-def relu_backward(dA, cache):
-
-    Z = cache
-    return dA * np.greater(Z, 0).astype(int)
+def relu_backward(dA, Z):
+    dZ = np.array(dA, copy=True)
+    dZ[Z <= 0] = 0
+    return dZ
 
 
 def sigmoid_forward(x):
