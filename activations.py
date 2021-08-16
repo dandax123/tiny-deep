@@ -2,14 +2,14 @@ import numpy as np
 
 
 def relu_forward(x):
-    b = (np.maximum(0, x), x)
+    b = (np.where(x > 0, x, x * 0.01), x)
     return b
 
 
 def relu_backward(dA, Z):
-    dZ = np.array(dA, copy=True)
-    dZ[Z <= 0] = 0
-    return dZ
+    dx = np.ones_like(Z)
+    dx[Z < 0] = 0.01
+    return dA * dx
 
 
 def sigmoid_forward(x):

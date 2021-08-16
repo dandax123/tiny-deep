@@ -10,7 +10,7 @@ from matplotlib.colors import ListedColormap
 
 from livelossplot import PlotLosses
 
-liveloss = plotlosses = PlotLosses()
+# liveloss = plotlosses = PlotLosses()
 
 
 class Model:
@@ -66,14 +66,12 @@ class Model:
         batch_size=400,
         epoch=100000,
         learning_rate=0.5,
-        l2_decay=False,
+        lr_decay=True,
+        decay_rate=1,
         initalization_method="He",
     ):
         mini_batches = self.batchify(batch_size)
         layer_dims = self.get_layer_dims()
-        t1 = []
-        t2 = []
-        t3 = []
         # print(layer_dims)
         self.parameters = initalize_parameter(layer_dims, initalization_method)
         for i in range(epoch):
@@ -87,14 +85,17 @@ class Model:
                 assert AL.shape == mini_batch_Y.shape
                 cost = compute_cost(AL, mini_batch_Y, batch_size)
                 grads = back_propagation(AL, mini_batch_Y, caches, self.layers)
+                if lr_decay:
+                    learning_rate = (1 / (1 + decay_rate * i)) ** learning_rate
+
                 self.parameters = update_parameters(
                     grads, self.parameters, learning_rate
                 )
                 accuracy = get_accuracy_value(AL, mini_batch_Y)
                 if i % 100 == 0:
                     logs = {"loss": cost, "acc": accuracy}
-                    liveloss.update(logs)
-                    liveloss.send()
+                    # liveloss.update(logs)
+                    # liveloss.send()
 
         return self
 
