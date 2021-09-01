@@ -30,3 +30,4 @@ neural_net = (
 )
 
 ```
+Advisable to use the  ```tiny_deep.ipnb``` with jupyter notebook, as you can see plots
