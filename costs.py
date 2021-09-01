@@ -3,9 +3,9 @@ import numpy as np
 
 def compute_cost(AL, Y, m):
 
-    logprobs = np.multiply(-np.log(AL), Y) + np.multiply(-np.log(1 - AL), 1 - Y)
-    loss = 1.0 / m * np.nansum(logprobs)
-    return loss
+    logprobs = np.multiply(np.log(AL),Y)  + np.multiply(np.log(1-AL),1-Y)
+    cost = - 1/m * np.sum(logprobs)  
+    return cost
 
 
 def get_accuracy_value(Y_hat, Y):

@@ -21,8 +21,8 @@ class Model:
     grads = {}
 
     def __init__(self, inputs, outputs):
-        self.inputs = np.array(inputs, dtype=np.float128)
-        self.outputs = np.array(outputs, dtype=np.float128)
+        self.inputs = np.array(inputs).astype(np.float16)
+        self.outputs = np.array(outputs).astype(np.float16)
         assert self.inputs.shape[1] == self.outputs.shape[1]
         self.parameters = {}
         self.grads = {}
@@ -73,6 +73,7 @@ class Model:
         mini_batches = self.batchify(batch_size)
         layer_dims = self.get_layer_dims()
         # print(layer_dims)
+        t1 = []
         self.parameters = initalize_parameter(layer_dims, initalization_method)
         for i in range(epoch):
             logs = {}
@@ -83,7 +84,7 @@ class Model:
                     mini_batch_X, self.layers, self.parameters
                 )
                 assert AL.shape == mini_batch_Y.shape
-                cost = compute_cost(AL, mini_batch_Y, batch_size)
+
                 grads = back_propagation(AL, mini_batch_Y, caches, self.layers)
                 if lr_decay:
                     learning_rate = (1 / (1 + decay_rate * i)) ** learning_rate
@@ -92,15 +93,17 @@ class Model:
                     grads, self.parameters, learning_rate
                 )
                 accuracy = get_accuracy_value(AL, mini_batch_Y)
-                if i % 100 == 0:
-                    logs = {"loss": cost, "acc": accuracy}
-                    # liveloss.update(logs)
-                    # liveloss.send()
-
+                t1.append(accuracy)
+                # if i % 100 == 0:
+                # logs = {"loss": cost, "acc": accuracy}
+                # liveloss.update(logs)
+                # liveloss.send()
+        final_accuracy = np.mean(t1)
+        print(f"training accuracy: {final_accuracy * 100}, last accuracy: {t1[-1]}")
         return self
 
     def predict(self, inputs, outputs):
         AL, cache = forward_propagation(inputs, self.layers, self.parameters)
         accuracy = get_accuracy_value(AL, outputs)
-        print(f"Accuracy: {accuracy * 100}")
+        print(f"test Accuracy: {accuracy * 100}")
         return convert_prob_into_class(AL)
